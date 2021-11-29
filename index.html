@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Display a map on a webpage</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://unpkg.com/data-driven-range-slider@1.0.1/index.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id='slider-container' class="chart-container" style="margin-left: 300px; width:calc((100% - 300px));opacity:0.85;bottom:0%;left:0;right:0;position:fixed
+;border-radius:5px;padding-top:25px;padding-left:5px;padding-right:5px;background-color:#222b30;"></div>
+<script>
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+
+const map = new mapboxgl.Map({
+container: 'map', // container ID
+style: 'mapbox://styles/mapbox/streets-v11', // style URL
+center: [0, 0], // starting position [lng, lat]
+zoom: 2 // starting zoom
+});
+
+map.on('load', () => {
+
+$.getJSON('one_vessel.geojson', function(data){
+
+    var time_arr = new Array();
+
+    for(var i = 0; i < data.features.length; i++) {
+        var obj = data.features[i].properties;
+       //create new property unix timestamp
+        data.features[i].properties['unix_start_ts'] = (new Date(obj.start_ts).getTime() / 1000)
+        time_arr.push(obj.start_ts)
+    }
+
+    map.addSource('combined_data', {
+        type: 'geojson',
+        data: data
+    });
+
+    map.addLayer({
+        'id': 'combined-data-layer',
+        'type': 'circle',
+        'source': 'combined_data',
+        'paint': {
+            'circle-radius': 4,
+            'circle-color': '#141414',
+            'circle-opacity': 0.5
+        }
+    });
+
+function filterBy(start_unix, end_unix) {
+
+        const filters =
+            [
+                 "all",
+                [">=", ['get', 'unix_start_ts'],start_unix],
+                ["<=", ['get', 'unix_start_ts'],end_unix]
+            ]
+        map.setFilter('combined-data-layer', filters);
+
+        }
+
+function timeConverter(UNIX_timestamp){
+  var a = new Date(UNIX_timestamp * 1000);
+  var year = a.getFullYear();
+  var m = a.getMonth()+1;
+  var d = a.getDate();
+  m = m > 9 ? m : "0"+m;
+  d = d > 9 ? d : "0"+d;
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = year + '-' + m + '-' + d + ' ' + hour + ':' + min + ':' + sec ;
+  return time;
+}
+
+     new RangeSlider()
+      .container('.chart-container')
+      .svgWidth(((window.innerWidth-300))-20)
+      .svgHeight(150)
+      .data(time_arr)
+      .accessor(d=> new Date(d))
+      .onBrush(d=>{
+         d3.select('.range').html(`range is [` + d.range[0] +', '+ d.range[1]+`]`)
+         d3.select('.data').html(`selected data length - `+d.data.length)
+
+          timeConverter(new Date(d.range[0]).getTime() / 1000) + ' - ' + timeConverter(new Date(d.range[1]).getTime() / 1000)
+
+          var startInterval = (new Date(d.range[0]).getTime() / 1000)
+          var endInterval = (new Date(d.range[1]).getTime() / 1000)
+          filterBy(startInterval, endInterval);
+      })
+      .render()
+
+    });
+
+});
+</script>
+
+</body>
+</html>
