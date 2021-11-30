@@ -16,7 +16,7 @@ body { margin: 0; padding: 0; }
 </head>
 <body>
 <div id="map"></div>
-<div id='slider-container' class="chart-container" style="margin-left: 300px; width:calc((100% - 300px));opacity:0.85;bottom:0%;left:0;right:0;position:fixed
+<div id='slider-container' class="chart-container" style="margin-left: 25%; width:50%;opacity:0.85;bottom:0%;left:0;right:0;position:fixed
 ;border-radius:5px;padding-top:25px;padding-left:5px;padding-right:5px;background-color:#222b30;"></div>
 <script>
 
@@ -86,7 +86,7 @@ function timeConverter(UNIX_timestamp){
 
      new RangeSlider()
       .container('.chart-container')
-      .svgWidth(((window.innerWidth-300))-20)
+      .svgWidth(window.innerWidth/2)
       .svgHeight(150)
       .data(time_arr)
       .accessor(d=> new Date(d))
