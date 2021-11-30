@@ -1,3 +1,4 @@
-# Project Title
+# Timeslider D3
 
-Simple overview of use/purpose.
+Variation on [existing project](https://github.com/bumbeishvili/data-driven-range-slider) by bumbeishvili
+ 
