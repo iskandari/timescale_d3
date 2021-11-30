@@ -1,4 +1,4 @@
 # Timeslider D3
 
-Variation on [existing project](https://github.com/bumbeishvili/data-driven-range-slider) by **bumbeishvili**
+Map-based variation on [data-driven range slider](https://github.com/bumbeishvili/data-driven-range-slider) by **bumbeishvili**
  
