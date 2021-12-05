@@ -9,6 +9,8 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.js"></script>
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="https://unpkg.com/data-driven-range-slider@1.0.1/index.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
 <style>
 body { margin: 0; padding: 0; }
 #map { position: absolute; top: 0; bottom: 0; width: 100%; }
@@ -16,6 +18,7 @@ body { margin: 0; padding: 0; }
 </head>
 <body>
 <div id="map"></div>
+<div id= "timerange" style="font-family: 'Open Sans';background-color:#ffffff;width:25%;opacity:0.85;top:0%;left:0;;position:fixed"></div>
 <div id='slider-container' class="chart-container" style="margin-left: 25%; width:50%;opacity:0.85;bottom:0%;left:0;right:0;position:fixed
 ;border-radius:5px;padding-top:25px;padding-left:5px;padding-right:5px;background-color:#222b30;"></div>
 <script>
@@ -70,6 +73,8 @@ function filterBy(start_unix, end_unix) {
 
         }
 
+//Use for display of selected time window
+
 function timeConverter(UNIX_timestamp){
   var a = new Date(UNIX_timestamp * 1000);
   var year = a.getFullYear();
@@ -94,11 +99,14 @@ function timeConverter(UNIX_timestamp){
          d3.select('.range').html(`range is [` + d.range[0] +', '+ d.range[1]+`]`)
          d3.select('.data').html(`selected data length - `+d.data.length)
 
-          timeConverter(new Date(d.range[0]).getTime() / 1000) + ' - ' + timeConverter(new Date(d.range[1]).getTime() / 1000)
-
           var startInterval = (new Date(d.range[0]).getTime() / 1000)
           var endInterval = (new Date(d.range[1]).getTime() / 1000)
           filterBy(startInterval, endInterval);
+
+          //Update display of selected time window
+          selectedRange = timeConverter(new Date(d.range[0]).getTime() / 1000) + ' - ' + timeConverter(new Date(d.range[1]).getTime() / 1000)
+          document.getElementById("timerange").innerHTML = selectedRange;
+
       })
       .render()
 
